@@ -27,4 +27,4 @@ jobs:
         run: zip -r $GITHUB_RUN_ID.zip out
 
       - name: Upload to bashupload.com
-        run: curl bashupload.com -T $GITHUB_RUN_ID.zip
+        run: curl bashupload.app -T $GITHUB_RUN_ID.zip
