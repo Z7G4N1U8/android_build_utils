@@ -145,13 +145,10 @@ jobs:
           repo init --depth 1 --git-lfs -u ${{ env.manifest }} -b ${{ env.branch }}
           curl -fLSs --create-dirs ${build_utils}/manifests/${{ inputs.device }}.xml -o .repo/local_manifests/default.xml
           git clone https://${GH_TOKEN}@github.com/${{ github.actor }}/android_vendor_private_keys vendor/private/keys
-          git clone https://${GH_TOKEN}@github.com/${{ github.actor }}/android_device_motorola_eqe-kernel device/motorola/eqe-kernel
           /opt/crave/resync.sh
 
           patches=(
             "packages/services/Telephony:2by2-Project/packages_services_Telephony/commit/6d1276ad67ec5a023e4d65cec1e0c659cf756cef"
-            "hardware/motorola:LineageOS/android_hardware_motorola/compare/lineage-23.0...moto-sm7550-devs:android_hardware_motorola:lineage-22.2"
-            "device/motorola/eqe:moto-sm7550-devs/android_device_motorola_eqe/compare/lineage-23.0...${{ github.actor }}:android_device_motorola_eqe:${{ inputs.android }}"
           )
 
           for patch in "${patches[@]}"; do
