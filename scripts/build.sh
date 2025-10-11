@@ -8,16 +8,6 @@ fi
 android="${1}"
 device="${2}"
 
-ksu_variant=""
-if [ "$#" -ge 3 ]; then
-    ksu_variant="${3}"
-fi
-
-ksu_branch="stable"
-if [ "$#" -ge 4 ]; then
-    ksu_branch="${4}"
-fi
-
 # my repo containing patches and scripts
 build_utils="https://raw.githubusercontent.com/Z7G4N1U8/android_build_utils/refs/heads/main"
 
