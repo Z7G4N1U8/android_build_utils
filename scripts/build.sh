@@ -21,19 +21,6 @@ handle_error() {
 
 cleanup() {
     echo "Cleaning up..."
-    for patch in "${patches[@]}"; do
-        patch_url="${build_utils}/patches/${patch}.patch"
-        echo "Processing reverse patch: ${patch} from ${patch_url}"
-
-        if grep -q "Reversed (or previously applied) patch detected!" <(curl -fLSs "${patch_url}" | patch --dry-run --strip 1 --fuzz 3 2>&1); then
-            echo "Attempting to reverse ${patch} patch..."
-            curl -fLSs "${patch_url}" | patch --strip 1 --fuzz 3 --reverse || handle_error "Failed to reverse ${patch} patch"
-            echo "${patch} patch reversed successfully."
-        else
-            echo "${patch} patch has not been applied. Skipping."
-        fi
-        echo
-    done
     rm -rf {device,vendor,kernel,hardware}/motorola vendor/private .repo/local_manifests
     unset GH_TOKEN
     echo "Exiting."
@@ -89,24 +76,16 @@ fi
 
 # Apply patches
 patches=(
-    "telephony"
-    "vibrator"
-    "misc_kernel"
-    "temp"
+    "packages/services/Telephony:2by2-Project/packages_services_Telephony/commit/6d1276ad67ec5a023e4d65cec1e0c659cf756cef"
 )
 
 for patch in "${patches[@]}"; do
-    patch_url="${build_utils}/patches/${patch}.patch"
-    echo "Processing patch: ${patch} from ${patch_url}"
-
-    if ! grep -q "Reversed (or previously applied) patch detected!" <(curl -fLSs "${patch_url}" | patch --dry-run --strip 1 --fuzz 3 2>&1); then
-        echo "Attempting to apply ${patch} patch..."
-        curl -fLSs "${patch_url}" | patch --strip 1 --fuzz 3 || handle_error "Failed to apply ${patch} patch"
-        echo "${patch} patch applied successfully."
-    else
-        echo "${patch} patch has already been applied. Skipping."
-    fi
-    echo
+    IFS=":" read -r patch_path patch_url <<< "${patch}"
+    rm -rf ${patch_path}
+    repo sync ${patch_path}
+    cd ${patch_path}
+    curl -fLSs https://github.com/${patch_url}.patch | git am
+    cd -
 done
 
 echo "Exporting important variables..."
