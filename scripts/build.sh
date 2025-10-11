@@ -74,6 +74,10 @@ else
     curl -fLSs "${remote_script}" | bash || handle_error "Remote sync script download or execution failed"
 fi
 
+cd device/motorola/eqe
+./extract-files.py ../eqe-dump
+cd -
+
 # Apply patches
 patches=(
     "packages/services/Telephony:2by2-Project/packages_services_Telephony/commit/6d1276ad67ec5a023e4d65cec1e0c659cf756cef"
