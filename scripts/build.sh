@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# Check if at least one argument is provided
-if [ "$#" -lt 2 ]; then
-    echo "Error: At least 2 arguments are required."
+# Check if at least 3 argument is provided
+if [ "$#" -lt 3 ]; then
+    echo "Error: At least 3 arguments are required."
     exit 1
 fi
 android="${1}"
 device="${2}"
+build_type="${3}"
 
 # my repo containing patches and scripts
 build_utils="https://raw.githubusercontent.com/Z7G4N1U8/android_build_utils/refs/heads/main"
@@ -115,7 +116,7 @@ export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
 
 echo "Starting build process..."
 source build/envsetup.sh
-brunch ${device} user
+brunch ${device} ${build_type}
 
 echo "Uploading file..."
 curl ${build_utils}/scripts/upload.sh | bash -s ${OUT}/{*.zip,recovery.img,vendor_boot.img}
