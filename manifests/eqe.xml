@@ -57,10 +57,10 @@
         revision="lineage-23.0"
     />
     <project
-        remote="eqe-github"
+        remote="peace-github"
         name="android_kernel_motorola_sm7550-modules"
         path="kernel/motorola/sm7550-modules"
-        revision="lineage-22.1"
+        revision="lineage-23.0"
     />
     <project
         remote="eqe-github"
