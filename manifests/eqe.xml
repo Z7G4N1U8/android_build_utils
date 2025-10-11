@@ -6,6 +6,7 @@
     <remote name="eqe-gitlab" fetch="https://gitlab.com/moto-sm7550" />
     <remote name="eqe-lineage" fetch="https://github.com/LineageOS" />
     <remote name="eqe-wfd" fetch="https://github.com/basamaryan" />
+    <remote name="peace-github" fetch="https://github.com/Z7G4N1U8" />
 
     <!-- Device -->
     <project
@@ -13,6 +14,12 @@
         name="android_device_motorola_eqe"
         path="device/motorola/eqe"
         revision="lineage-23.0"
+    />
+    <project
+        remote="peace-github"
+        name="android_device_motorola_eqe-kernel"
+        path="device/motorola/eqe-kernel"
+        revision="main"
     />
     <project
         remote="eqe-lineage"
