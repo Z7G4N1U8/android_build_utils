@@ -42,7 +42,7 @@ case "${android}" in
         ;;
     "EvolutionX")
         repo_url="https://github.com/Evolution-X/manifest.git"
-        repo_branch="vic"
+        repo_branch="bka"
         ;;
     "RisingOS")
         repo_url="https://github.com/RisingOS-Revived/android.git"
