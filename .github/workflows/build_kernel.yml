@@ -99,7 +99,7 @@ jobs:
 
       - name: Set Release Tag and Notes
         run: |
-          echo "release=" >> $GITHUB_ENV
+          echo "release=kernel-$(date +"%Y-%m-%d")" >> $GITHUB_ENV
           cat << EOF > release_notes.md
 
           Kernel for Motorola Edge 50 Pro (eqe)
