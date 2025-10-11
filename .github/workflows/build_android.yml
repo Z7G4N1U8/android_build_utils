@@ -88,37 +88,9 @@ jobs:
     needs: prepare
 
     steps:
-      - name: Set Project variables
-        run: |
-          target="bacon"
-
-          case "${{ inputs.android }}" in
-            "LineageOS")
-              manifest="https://github.com/LineageOS/android.git"
-              branch="lineage-22.2"
-            ;;
-            "EvolutionX")
-              manifest="https://github.com/Evolution-X/manifest.git"
-              branch="bka"
-              target="evolution"
-            ;;
-            "PixelOS")
-              manifest="https://github.com/PixelOS-AOSP/manifest.git"
-              branch="fifteen"
-            ;;
-            "RisingOS")
-              manifest="https://github.com/RisingOS-Revived/android.git"
-              branch="sixteen"
-            ;;
-          esac
-
-          echo "project=/crave-devspaces/${{ inputs.android }}" >> "$GITHUB_ENV"
-          echo "manifest=${manifest}" >> "$GITHUB_ENV"
-          echo "branch=${branch}" >> "$GITHUB_ENV"
-          echo "target=${target}" >> "$GITHUB_ENV"
-
       - name: Setup Project
         run: |
+          echo "project=/crave-devspaces/${{ inputs.android }}" >> "$GITHUB_ENV"
           echo $CRAVE_CONF > $HOME/crave.conf
           crave clone create --projectID 93 ${{ env.project }} || echo "Crave clone create failed!"
         env:
@@ -137,36 +109,7 @@ jobs:
       - name: Start compilation through Crave
         run: |
           cd ${{ env.project }}
-
-          crave run --no-patch -- '# Run ID: ${{ github.run_id }}
-          build_utils="https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/main"
-
-          rm -rf .repo/local_manifests {device,vendor,kernel,hardware}/{motorola,private} ${{ inputs.removals }}
-          repo init --depth 1 --git-lfs -u ${{ env.manifest }} -b ${{ env.branch }}
-          curl -fLSs --create-dirs ${build_utils}/manifests/${{ inputs.device }}.xml -o .repo/local_manifests/default.xml
-          git clone https://${GH_TOKEN}@github.com/${{ github.actor }}/android_vendor_private_keys vendor/private/keys
-          /opt/crave/resync.sh
-
-          cd device/motorola/eqe
-          ./extract-files.py ../eqe-dump
-          cd -
-
-          patches=(
-            "packages/services/Telephony:2by2-Project/packages_services_Telephony/commit/6d1276ad67ec5a023e4d65cec1e0c659cf756cef"
-          )
-
-          for patch in "${patches[@]}"; do
-            IFS=":" read -r patch_path patch_url <<< "${patch}"
-            rm -rf ${patch_path}
-            repo sync ${patch_path}
-            cd ${patch_path}
-            curl -fLSs https://github.com/${patch_url}.patch | git am
-            cd -
-          done
-
-          source build/envsetup.sh
-          brunch ${{ inputs.device }} ${{ inputs.build }}
-          '
+          crave run -- 'curl -LSs https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/main/scripts/build.sh | bash -s ${{ inputs.android }} ${{ inputs.device }} ${{ inputs.build }}'
         timeout-minutes: 1440
 
       - name: Pull ROM
