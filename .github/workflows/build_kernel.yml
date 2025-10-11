@@ -34,12 +34,20 @@ jobs:
           cp ../susfs4ksu/kernel_patches/include/linux/* include/linux
           patch -p1 < ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch
 
+      - name: Manual Hook
+        run: |
+          git clone https://github.com/SukiSU-Ultra/SukiSU_patch.git
+          cd sm7550
+          patch -p1 < ../SukiSU_patch/hooks/scope_min_manual_hooks_v1.5.patch
+
       - name: Add Configuration
         run: |
           cat << EOF >> sm7550/arch/arm64/configs/gki_defconfig
           # KernelSU & SUSFS
           CONFIG_KSU=y
           CONFIG_KSU_SUSFS=y
+          CONFIG_KSU_SUSFS_SUS_SU=n
+          CONFIG_KSU_MANUAL_HOOK=y
           CONFIG_KSU_SUSFS_SUS_OVERLAYFS=n
           
           # Mountify Support
