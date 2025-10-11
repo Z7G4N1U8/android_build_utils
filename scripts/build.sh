@@ -52,10 +52,6 @@ set -o pipefail
 trap 'handle_error "An unexpected error occurred"' ERR
 trap 'cleanup' EXIT
 
-echo
-echo "==================== Sync ROM and device sources ===================="
-echo
-
 # crave resync script
 local_script="/opt/crave/resync.sh"
 remote_script="${build_utils}/scripts/resync.sh"
@@ -100,14 +96,6 @@ else
     curl -fLSs "${remote_script}" | bash || handle_error "Remote sync script download or execution failed"
 fi
 
-echo
-echo "==================== Sync process completed successfully ===================="
-echo
-
-echo
-echo "==================== Applying patches ===================="
-echo
-
 # Apply patches
 patches=(
     "telephony"
@@ -130,15 +118,7 @@ for patch in "${patches[@]}"; do
     echo
 done
 
-echo
-echo "==================== All patches applied successfully ===================="
-echo
-
 echo "Exporting important variables..."
-export BUILD_USERNAME="peace"
-export BUILD_HOSTNAME="crave"
-export KBUILD_BUILD_USER="peace"
-export KBUILD_BUILD_HOST="crave"
 export TZ="Asia/Kolkata"
 export TARGET_HAS_UDFPS=true
 export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
