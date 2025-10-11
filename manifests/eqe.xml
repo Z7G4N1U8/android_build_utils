@@ -5,6 +5,7 @@
     <remote name="eqe-github" fetch="https://github.com/moto-sm7550-devs" />
     <remote name="eqe-gitlab" fetch="https://gitlab.com/moto-sm7550" />
     <remote name="eqe-lineage" fetch="https://github.com/LineageOS" />
+    <remote name="eqe-wfd" fetch="https://github.com/basamaryan" />
 
     <!-- Device -->
     <project
@@ -25,6 +26,12 @@
         remote="eqe-gitlab"
         name="proprietary_vendor_motorola_eqe"
         path="vendor/motorola/eqe"
+        revision="lineage-23.0"
+    />
+    <project
+        remote="eqe-wfd"
+        name="proprietary_vendor_qcom_wfd"
+        path="vendor/qcom/wfd"
         revision="lineage-23.0"
     />
 
