@@ -164,8 +164,7 @@ jobs:
           done
 
           source build/envsetup.sh
-          breakfast ${{ inputs.device }} ${{ inputs.build }}
-          cmka ${{ env.target }}
+          brunch ${{ inputs.device }} ${{ inputs.build }}
           '
         timeout-minutes: 1440
 
