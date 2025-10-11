@@ -104,17 +104,6 @@ echo
 echo "==================== Sync process completed successfully ===================="
 echo
 
-# Root using KernelSU or KernelSU Next
-# SuSFS patched
-# Requires two arguments
-# 1. ksu_variant: ksu or next
-# 2. ksu_branch: stable or dev
-if [ "$#" -ge 3 ]; then
-    cd kernel/motorola/sm7550
-    curl -fLSs ${build_utils}/scripts/root.sh | bash -s ${ksu_variant} ${ksu_branch}
-    cd -
-fi
-
 echo
 echo "==================== Applying patches ===================="
 echo
