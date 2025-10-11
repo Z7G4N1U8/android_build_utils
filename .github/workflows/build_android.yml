@@ -147,6 +147,10 @@ jobs:
           git clone https://${GH_TOKEN}@github.com/${{ github.actor }}/android_vendor_private_keys vendor/private/keys
           /opt/crave/resync.sh
 
+          cd device/motorola/eqe
+          ./extract-files.py ../eqe-dump
+          cd -
+
           patches=(
             "packages/services/Telephony:2by2-Project/packages_services_Telephony/commit/6d1276ad67ec5a023e4d65cec1e0c659cf756cef"
           )
