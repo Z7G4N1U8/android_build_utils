@@ -88,11 +88,6 @@ for patch in "${patches[@]}"; do
     cd -
 done
 
-echo "Exporting important variables..."
-export TZ="Asia/Kolkata"
-export TARGET_HAS_UDFPS=true
-export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
-
 echo "Starting build process..."
 source build/envsetup.sh
 brunch ${device} ${build_type}
