@@ -19,7 +19,7 @@ if [ "$#" -ge 4 ]; then
 fi
 
 # my repo containing patches and scripts
-build_utils="https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main"
+build_utils="https://raw.githubusercontent.com/Z7G4N1U8/android_build_utils/refs/heads/main"
 
 # Function for centralized error handling
 handle_error() {
