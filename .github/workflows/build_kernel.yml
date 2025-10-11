@@ -6,16 +6,10 @@ on:
       - ".github/workflows/build_kernel.yml"
   workflow_dispatch:
 
-env:
-  ksu: "v1.0.5"
-  susfs: "v1.5.9"
-
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    outputs:
-      ksu_version: ${{ steps.get_ksu_version.outputs.ksu_version }}
 
     steps:
       - name: Checkout
@@ -28,67 +22,29 @@ jobs:
           mkdir -p .repo/local_manifests && cp manifests/kernel.xml .repo/local_manifests/default.xml
           repo sync -c --force-sync --optimized-fetch --no-tags --no-clone-bundle --prune -j$(nproc --all)
 
-      - name: Add KernelSU ${{ env.ksu }}
+      - name: Add SukiSU
         working-directory: sm7550
-        run: curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s ${{ env.ksu }}
-
-      - name: Get KernelSU Version
-        id: get_ksu_version
-        working-directory: sm7550/KernelSU
-        run: echo "ksu_version=$(expr $(git rev-list --count HEAD) "+" 10200)" >> $GITHUB_OUTPUT
-
-      - name: Checkout SUSFS ${{ env.susfs }}
-        run: |
-          git clone https://gitlab.com/simonpunk/susfs4ksu -b gki-android13-5.15
-          cd susfs4ksu
-          git checkout $(git log --grep="Bump version to ${{ env.susfs }}" --format="%H" -1)
+        run: curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-main
 
       - name: Apply SUSFS Patches
         working-directory: sm7550
         run: |
+          git clone https://gitlab.com/simonpunk/susfs4ksu -b gki-android13-5.15 ../susfs4ksu
           cp ../susfs4ksu/kernel_patches/fs/* fs
           cp ../susfs4ksu/kernel_patches/include/linux/* include/linux
           patch -p1 < ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch
-          cd KernelSU
-          patch -p1 < ../../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
 
       - name: Add Configuration
         run: |
           cat << EOF >> sm7550/arch/arm64/configs/gki_defconfig
-          # KernelSU and SUSFS Config
+          # KernelSU & SUSFS
           CONFIG_KSU=y
           CONFIG_KSU_SUSFS=y
-          CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=n
-          CONFIG_KSU_SUSFS_SUS_PATH=y
-          CONFIG_KSU_SUSFS_SUS_MOUNT=y
-          CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y
-          CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y
-          CONFIG_KSU_SUSFS_SUS_KSTAT=y
-          CONFIG_KSU_SUSFS_TRY_UMOUNT=y
-          CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y
-          CONFIG_KSU_SUSFS_SPOOF_UNAME=y
-          CONFIG_KSU_SUSFS_ENABLE_LOG=y
-          CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
-          CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
-          CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
-          CONFIG_KSU_SUSFS_SUS_SU=y
-
-          # tmpfs config
+          CONFIG_KSU_SUSFS_SUS_OVERLAYFS=n
+          
+          # Mountify Support
           CONFIG_TMPFS_XATTR=y
           CONFIG_TMPFS_POSIX_ACL=y
-
-          # Additional config
-          CONFIG_IP_NF_TARGET_TTL=y
-          CONFIG_IP6_NF_TARGET_HL=y
-          CONFIG_IP6_NF_MATCH_HL=y
-
-          # BBR Config
-          CONFIG_TCP_CONG_ADVANCED=y
-          CONFIG_TCP_CONG_BBR=y
-          CONFIG_NET_SCH_FQ=y
-          CONFIG_TCP_CONG_BIC=n
-          CONFIG_TCP_CONG_WESTWOOD=n
-          CONFIG_TCP_CONG_HTCP=n
           EOF
 
           # Remove check_defconfig
@@ -104,7 +60,7 @@ jobs:
       - name: Copy Boot Image
         run: |
           mkdir artifacts && cd artifacts
-          cp ../out/*/dist/boot.img Kernel.img
+          cp ../out/*/dist/boot.img Kernel_boot.img
 
       - name: Checkout AnyKernel
         uses: actions/checkout@v4
@@ -115,11 +71,11 @@ jobs:
       - name: Make AnyKernel Zip
         working-directory: AnyKernel
         run: |
-          sed -i 's|^kernel\.string=.*|kernel.string=Kernel by SomeEmptyBox|' anykernel.sh
+          sed -i 's|^kernel\.string=.*|kernel.string=Kernel by Z7G4N1U8|' anykernel.sh
           sed -i 's|^do\.devicecheck=.*|do.devicecheck=1|' anykernel.sh
           sed -i 's|^device\.name1=.*|device.name1=eqe|' anykernel.sh
           cp ../out/*/dist/Image .
-          zip -r ../artifacts/Kernel.zip .
+          zip -r ../artifacts/Kernel_AnyKernel.zip .
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
@@ -143,26 +99,19 @@ jobs:
 
       - name: Set Release Tag and Notes
         run: |
-          echo "release=Kernel-${{ env.ksu }}-${{ env.susfs }}" >> $GITHUB_ENV
+          echo "release=" >> $GITHUB_ENV
           cat << EOF > release_notes.md
 
           Kernel for Motorola Edge 50 Pro (eqe)
 
           Features:
-          -> KernelSU ${{ env.ksu }}
-          -> SUSFS ${{ env.susfs }}
-          -> BBR Support
+          -> SukiSU
+          -> SUSFS
 
           Links:
-          -> [KernelSU Manager](https://github.com/tiann/KernelSU/releases/download/${{ env.ksu }}/KernelSU_${{ env.ksu }}_${{ needs.build.outputs.ksu_version }}-release.apk)
+          -> [SukiSU Manager](https://github.com/SukiSU-Ultra/SukiSU-Ultra)
           -> [Kernel Flasher](https://github.com/fatalcoder524/KernelFlasher)
           -> [SUSFS Module](https://github.com/sidex15/susfs4ksu-module)
-          -> [TCP Optimiser Module](https://github.com/fatalcoder524/TCP_Optimiser_Module)
-
-          Notes:
-          -> Kernel is built on stable release of KernelSU and SUSFS
-          -> Flash SUSFS Module and make sure SUS SU is enabled
-          -> Flash TCP Optimiser Module and leave at default settings
           EOF
 
       - name: Create GitHub Release
