@@ -21,7 +21,11 @@ handle_error() {
 
 cleanup() {
     echo "Cleaning up..."
-    rm -rf {device,vendor,kernel,hardware}/{motorola,qcom,private} .repo/local_manifests
+    for path in $(xmllint --xpath '//project/@path' ".repo/local_manifests/default.xml" | sed 's/path="//g; s/"//g'); do
+        echo "Removing directory: $path"
+        rm -rf "$path"
+    done
+    rm -rf vendor/private .repo/local_manifests
     unset GH_TOKEN
     echo "Exiting."
 }
