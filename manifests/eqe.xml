@@ -11,7 +11,7 @@
 
     <!-- Device -->
     <project
-        remote="eqe-github"
+        remote="peace-github"
         name="android_device_motorola_eqe"
         path="device/motorola/eqe"
         revision="lineage-23.0"
