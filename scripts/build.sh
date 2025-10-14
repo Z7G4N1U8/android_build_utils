@@ -19,20 +19,15 @@ handle_error() {
     exit 1
 }
 
-cleanup() {
-    echo "Cleaning up..."
-    for path in $(xmllint --xpath '//project/@path' ".repo/local_manifests/default.xml" | sed 's/path="//g; s/"//g'); do
-        echo "Removing directory: $path"
-        rm -rf "$path"
-    done
-    rm -rf vendor/private .repo/local_manifests
-    unset GH_TOKEN
-    echo "Exiting."
-}
+echo "Cleaning up..."
+for path in $(xmllint --xpath '//project/@path' ".repo/local_manifests/default.xml" | sed 's/path="//g; s/"//g'); do
+    echo "Removing directory: $path"
+    rm -rf "$path"
+done
+rm -rf vendor/private .repo/local_manifests
 
 set -o pipefail
 trap 'handle_error "An unexpected error occurred"' ERR
-trap 'cleanup' EXIT
 
 # crave resync script
 local_script="/opt/crave/resync.sh"
@@ -81,7 +76,6 @@ fi
 # Dump ROM & Extract Vendor
 cd device/motorola/eqe
 git clone https://github.com/DumprX/DumprX.git && cd DumprX
-bash setup.sh
 bash dumper.sh https://mirrors.lolinet.com/firmware/lenomola/2024/eqe/official/RETAIL/EQE_RETAIL_15_V1UMS35H.10-67-7-2_subsidy-DEFAULT_regulatory-DEFAULT_cid50_CFC.xml.zip
 cd ..
 ./extract-files.py DumprX/out
