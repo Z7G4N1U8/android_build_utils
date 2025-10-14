@@ -42,7 +42,7 @@ remote_script="${build_utils}/scripts/resync.sh"
 case "${android}" in
     "LineageOS")
         repo_url="https://github.com/LineageOS/android.git"
-        repo_branch="lineage-22.2"
+        repo_branch="lineage-23.0"
         ;;
     "EvolutionX")
         repo_url="https://github.com/Evolution-X/manifest.git"
