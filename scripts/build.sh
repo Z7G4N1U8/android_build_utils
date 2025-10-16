@@ -75,6 +75,8 @@ fi
 
 # Dump ROM & Extract Vendor
 cd device/motorola/eqe
+curl -LsSf https://astral.sh/uv/install.sh | sh
+sudo apt install protobuf-compiler -y
 git clone https://github.com/DumprX/DumprX.git && cd DumprX
 bash dumper.sh https://mirrors.lolinet.com/firmware/lenomola/2024/eqe/official/RETAIL/EQE_RETAIL_15_V1UMS35H.10-67-7-2_subsidy-DEFAULT_regulatory-DEFAULT_cid50_CFC.xml.zip
 cd ..
