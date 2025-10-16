@@ -109,7 +109,7 @@ jobs:
       - name: Start compilation through Crave
         run: |
           cd ${{ env.project }}
-          crave run -- 'curl -LSs https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/main/scripts/build.sh | bash -s ${{ inputs.android }} ${{ inputs.device }} ${{ inputs.build }}'
+          crave run -- 'curl -LSs https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ github.ref_name }}/scripts/build.sh | bash -s ${{ inputs.android }} ${{ inputs.device }} ${{ inputs.build }}'
         timeout-minutes: 1440
 
       - name: Pull ROM
