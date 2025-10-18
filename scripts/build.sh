@@ -82,6 +82,7 @@ git clone https://github.com/DumprX/DumprX.git && cd DumprX
 bash dumper.sh https://mirrors.lolinet.com/firmware/lenomola/2024/eqe/official/RETAIL/EQE_RETAIL_15_V1UMS35H.10-67-7-2_subsidy-DEFAULT_regulatory-DEFAULT_cid50_CFC.xml.zip
 cd ..
 ./extract-files.py DumprX/out
+rm -rf DumprX
 cd ../../..
 
 # Apply patches
