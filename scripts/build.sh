@@ -102,6 +102,3 @@ done
 echo "Starting build process..."
 source build/envsetup.sh
 brunch ${device} ${build_type}
-
-echo "Uploading file..."
-curl ${build_utils}/scripts/upload.sh | bash -s ${OUT}/{*.zip,recovery.img,vendor_boot.img}
