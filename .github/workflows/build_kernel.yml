@@ -105,6 +105,12 @@ jobs:
         with:
           path: artifacts
 
+      - name: Download Manager
+        run: |
+          curl -o manager.zip -LSs https://nightly.link/SukiSU-Ultra/SukiSU-Ultra/workflows/build-manager/main/manager.zip
+          unzip manager.zip -d manager
+          cp $(find manager -type f) artifacts/Manager.apk
+
       - name: Set Release Tag and Notes
         run: |
           echo "release=kernel-$(date +"%Y-%m-%d")" >> $GITHUB_ENV
