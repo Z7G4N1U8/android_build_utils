@@ -101,4 +101,5 @@ done
 
 echo "Starting build process..."
 source build/envsetup.sh
-brunch ${device} ${build_type}
+breakfast ${device} ${build_type}
+cmka evolution
