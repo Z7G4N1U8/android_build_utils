@@ -10,8 +10,6 @@ on:
         options:
           - "LineageOS"
           - "EvolutionX"
-          - "PixelOS"
-          - "RisingOS"
       removals:
         description: "Folders to be removed before syncing:"
         required: false
@@ -31,10 +29,6 @@ on:
           - "eng"
           - "userdebug"
           - "user"
-      clean:
-        description: "Clean"
-        default: false
-        type: boolean
       release:
         description: "Release"
         default: false
@@ -103,19 +97,23 @@ jobs:
             ignoreClientHostname: true
             no-patch: true
             env:
-              GH_TOKEN: "${{ secrets.GH_TOKEN }}"
+              android: "${{ inputs.android }}"
+              device: "${{ inputs.device }}"
+              build: "${{ inputs.build }}"
+              removals: "${{ inputs.removals }}"
+              utils: "https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ github.ref_name }}"
+              token: "${{ secrets.GH_TOKEN }}"
           EOF
 
       - name: Start compilation through Crave
-        run: |
-          cd ${{ env.project }}
-          crave run -- 'curl -LSs https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ github.ref_name }}/scripts/build.sh | bash -s ${{ inputs.android }} ${{ inputs.device }} ${{ inputs.build }}'
+        working-directory: ${{ env.project }}
+        run: crave run -- 'curl -LSs https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ github.ref_name }}/scripts/build.sh | bash'
         timeout-minutes: 1440
 
       - name: Pull ROM
         if: ${{ success() }}
+        working-directory: ${{ env.project }}
         run: |
-          cd ${{ env.project }}
           crave pull out/target/product/${{ inputs.device }}/{*.zip,boot.img,init_boot.img,vendor_boot.img,super_empty.img,recovery.img} -d ../builds/${{ inputs.android }}/${{ github.run_id }}
           rm ../builds/${{ inputs.android }}/${{ github.run_id }}/*ota* || true
 
@@ -127,19 +125,13 @@ jobs:
 
       - name: Execute if the job is cancelled
         if: ${{ cancelled() }}
-        run: |
-          cd ${{ env.project }}
-          crave stop --all
+        working-directory: ${{ env.project }}
+        run: crave stop --all
 
       - name: Display error.log
         if: ${{ failure() }}
-        id: errorlog
-        run: |
-          cd ${{ env.project }}
-          crave ssh -- sleep 1
-          crave pull out/error.log
-          echo "Displaying out/error.log"
-          cat out/error.log
+        working-directory: ${{ env.project }}
+        run: crave pull out/error.log && cat out/error.log
 
   release:
     name: Release
@@ -185,7 +177,7 @@ jobs:
       - name: Upload Release Assets
         if: ${{ inputs.upload }}
         run: |
-          for file in $(find artifacts -type f -name "*.zip" -o -name "*.img"); do
+          for file in $(find artifacts -type f); do
             echo "Uploading $file..."
             gh release upload "${{ env.release }}" "$file"
           done
