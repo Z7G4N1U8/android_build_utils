@@ -10,6 +10,7 @@ on:
         options:
           - "LineageOS"
           - "EvolutionX"
+          - "Lunaris-AOSP"
       removals:
         description: "Folders to be removed before syncing:"
         required: false
@@ -85,6 +86,25 @@ jobs:
       - name: Setup Project
         run: |
           echo "project=/crave-devspaces/${{ inputs.android }}" >> "$GITHUB_ENV"
+
+          set_android() {
+            echo "manifest=$1" >> "$GITHUB_ENV"
+            echo "branch=$2" >> "$GITHUB_ENV"
+            echo "target=$3" >> "$GITHUB_ENV"
+          }
+
+          case "${{ inputs.android }}" in
+            "LineageOS")
+              set_android "https://github.com/LineageOS/android.git" "lineage-23.0" "bacon"
+            ;;
+            "EvolutionX")
+              set_android "https://github.com/Evolution-X/manifest.git" "bka" "evolution"
+            ;;
+            "Lunaris-AOSP")
+              set_android "https://github.com/Lunaris-AOSP/android.git" "16" "lunaris"
+            ;;
+          esac
+
           echo $CRAVE_CONF > $HOME/crave.conf
           crave clone create --projectID 93 ${{ env.project }} || echo "Crave clone create failed!"
         env:
@@ -97,17 +117,25 @@ jobs:
             ignoreClientHostname: true
             no-patch: true
             env:
-              android: "${{ inputs.android }}"
-              device: "${{ inputs.device }}"
-              build: "${{ inputs.build }}"
-              removals: "${{ inputs.removals }}"
-              utils: "https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ github.ref_name }}"
-              token: "${{ secrets.GH_TOKEN }}"
+              BUILD_UTILS: "https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ github.ref_name }}"
+              GH_TOKEN: "${{ secrets.GH_TOKEN }}"
           EOF
 
       - name: Start compilation through Crave
         working-directory: ${{ env.project }}
-        run: crave run -- 'curl -LSs https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ github.ref_name }}/scripts/build.sh | bash'
+        run: |
+          crave run -- 'Run ID: ${{ github.run_id }}
+          rm -rf vendor/private .repo/local_manifests ${{ inputs.removals }}
+
+          repo init --depth 1 --git-lfs -u ${{ env.manifest }} -b ${{ env.branch }}
+          curl -LSs --create-dirs "$BUILD_UTILS/manifests/${{ inputs.device }}.xml" -o .repo/local_manifests/default.xml
+          git clone https://$GH_TOKEN@github.com/Z7G4N1U8/android_vendor_private_keys vendor/private/keys
+          /opt/crave/resync.sh
+
+          source build/envsetup.sh
+          breakfast ${{ inputs.device }} ${{ inputs.build }}
+          cmka ${{ env.target }}
+          '
         timeout-minutes: 1440
 
       - name: Pull ROM
