@@ -1,65 +1,58 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <manifest>
 
-    <!-- Remotes -->
-    <remote name="eqe-github" fetch="https://github.com/moto-sm7550-devs" />
-    <remote name="eqe-gitlab" fetch="https://gitlab.com/moto-sm7550" />
-    <remote name="eqe-lineage" fetch="https://github.com/LineageOS" />
-    <remote name="eqe-wfd" fetch="https://github.com/basamaryan" />
-    <remote name="peace-github" fetch="https://github.com/Z7G4N1U8" />
+  <!-- Remotes -->
+  <remote name="eqe-github" fetch="https://github.com/moto-sm7550-devs" />
+  <remote name="eqe-lineage" fetch="https://github.com/LineageOS" />
+  <remote name="eqe-wfd" fetch="https://github.com/basamaryan" />
+  <remote name="peace-github" fetch="https://github.com/Z7G4N1U8" />
 
-    <!-- Device -->
-    <project
-        remote="peace-github"
-        name="android_device_motorola_eqe"
-        path="device/motorola/eqe"
-        revision="lineage-23.0"
-    />
-    <project
-        remote="peace-github"
-        name="android_device_motorola_eqe-kernel"
-        path="device/motorola/eqe-kernel"
-        revision="main"
-    />
-    <project
-        remote="eqe-lineage"
-        name="android_hardware_motorola"
-        path="hardware/motorola"
-        revision="lineage-23.0"
-    />
+  <!-- Device -->
+  <project
+    remote="peace-github"
+    name="android_device_motorola_eqe"
+    path="device/motorola/eqe"
+    revision="lineage-23.0"
+  />
+  <project
+    remote="eqe-lineage"
+    name="android_hardware_motorola"
+    path="hardware/motorola"
+    revision="lineage-23.0"
+  />
 
-    <!-- Vendor -->
-    <project
-        remote="eqe-gitlab"
-        name="proprietary_vendor_motorola_eqe"
-        path="vendor/motorola/eqe"
-        revision="lineage-23.0"
-    />
-    <project
-        remote="eqe-wfd"
-        name="proprietary_vendor_qcom_wfd"
-        path="vendor/qcom/wfd"
-        revision="lineage-23.0"
-    />
+  <!-- Vendor -->
+  <project
+    remote="peace-github"
+    name="proprietary_vendor_motorola_eqe"
+    path="vendor/motorola/eqe"
+    revision="lineage-23.0"
+  />
+  <project
+    remote="eqe-wfd"
+    name="proprietary_vendor_qcom_wfd"
+    path="vendor/qcom/wfd"
+    revision="lineage-23.0"
+  />
 
-    <!-- Kernel -->
-    <project
-        remote="eqe-github"
-        name="android_kernel_motorola_sm7550"
-        path="kernel/motorola/sm7550"
-        revision="lineage-23.0"
-    />
-    <project
-        remote="peace-github"
-        name="android_kernel_motorola_sm7550-modules"
-        path="kernel/motorola/sm7550-modules"
-        revision="lineage-23.0"
-    />
-    <project
-        remote="eqe-github"
-        name="android_kernel_motorola_sm7550-devicetrees"
-        path="kernel/motorola/sm7550-devicetrees"
-        revision="lineage-22.1"
-    />
+  <!-- Kernel -->
+  <project
+    remote="eqe-github"
+    name="android_kernel_motorola_sm7550"
+    path="kernel/motorola/sm7550"
+    revision="lineage-23.0"
+  />
+  <project
+    remote="peace-github"
+    name="android_kernel_motorola_sm7550-modules"
+    path="kernel/motorola/sm7550-modules"
+    revision="lineage-23.0"
+  />
+  <project
+    remote="eqe-github"
+    name="android_kernel_motorola_sm7550-devicetrees"
+    path="kernel/motorola/sm7550-devicetrees"
+    revision="lineage-22.1"
+  />
 
 </manifest>
