@@ -3,7 +3,7 @@
 
   <!-- Remotes -->
   <remote name="eqe-github" fetch="https://github.com/moto-sm7550-devs" />
-  <remote name="eqe-lineage" fetch="https://github.com/LineageOS" />
+  <remote name="eqe-evo" fetch="https://github.com/Evolution-X-Devices" />
   <remote name="eqe-wfd" fetch="https://github.com/basamaryan" />
   <remote name="peace-github" fetch="https://github.com/Z7G4N1U8" />
 
@@ -15,10 +15,10 @@
     revision="lineage-23.0"
   />
   <project
-    remote="eqe-lineage"
-    name="android_hardware_motorola"
+    remote="eqe-evo"
+    name="hardware_motorola"
     path="hardware/motorola"
-    revision="lineage-23.0"
+    revision="bka"
   />
 
   <!-- Vendor -->
