@@ -1,58 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <manifest>
+  <remote name="peace" fetch="https://github.com/Z7G4N1U8" revision="bka" />
 
-  <!-- Remotes -->
-  <remote name="eqe-github" fetch="https://github.com/moto-sm7550-devs" />
-  <remote name="eqe-evo" fetch="https://github.com/Evolution-X-Devices" />
-  <remote name="eqe-wfd" fetch="https://github.com/basamaryan" />
-  <remote name="peace-github" fetch="https://github.com/Z7G4N1U8" />
+  <!-- device -->
+  <project name="android_device_motorola_eqe" path="device/motorola/eqe" remote="peace" />
+  <project name="hardware_motorola" path="hardware/motorola" remote="evo-devices" />
 
-  <!-- Device -->
-  <project
-    remote="peace-github"
-    name="android_device_motorola_eqe"
-    path="device/motorola/eqe"
-    revision="lineage-23.0"
-  />
-  <project
-    remote="eqe-evo"
-    name="hardware_motorola"
-    path="hardware/motorola"
-    revision="bka"
-  />
+  <!-- vendor -->
+  <project name="proprietary_vendor_motorola_eqe" path="vendor/motorola/eqe" remote="peace" />
+  <project name="proprietary_vendor_qcom_wfd" path="vendor/qcom/wfd" remote="peace" />
 
-  <!-- Vendor -->
-  <project
-    remote="peace-github"
-    name="proprietary_vendor_motorola_eqe"
-    path="vendor/motorola/eqe"
-    revision="lineage-23.0"
-  />
-  <project
-    remote="eqe-wfd"
-    name="proprietary_vendor_qcom_wfd"
-    path="vendor/qcom/wfd"
-    revision="lineage-23.0"
-  />
-
-  <!-- Kernel -->
-  <project
-    remote="eqe-github"
-    name="android_kernel_motorola_sm7550"
-    path="kernel/motorola/sm7550"
-    revision="lineage-23.0"
-  />
-  <project
-    remote="peace-github"
-    name="android_kernel_motorola_sm7550-modules"
-    path="kernel/motorola/sm7550-modules"
-    revision="lineage-23.0"
-  />
-  <project
-    remote="eqe-github"
-    name="android_kernel_motorola_sm7550-devicetrees"
-    path="kernel/motorola/sm7550-devicetrees"
-    revision="lineage-22.1"
-  />
-
+  <!-- kernel -->
+  <project name="android_kernel_motorola_sm7550" path="kernel/motorola/sm7550" remote="peace" />
+  <project name="android_kernel_motorola_sm7550-modules" path="kernel/motorola/sm7550-modules" remote="peace" />
+  <project name="android_kernel_motorola_sm7550-devicetrees" path="kernel/motorola/sm7550-devicetrees" remote="peace" />
 </manifest>
