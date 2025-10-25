@@ -2,42 +2,27 @@ name: Build Android (Crave)
 on:
   workflow_dispatch:
     inputs:
-      android:
-        description: "Choose a ROM to build:"
-        required: true
-        default: "LineageOS"
-        type: choice
-        options:
-          - "LineageOS"
-          - "EvolutionX"
-          - "Lunaris-AOSP"
-      removals:
-        description: "Folders to be removed before syncing:"
-        required: false
       device:
         description: "Device:"
         required: true
         default: "eqe"
         type: choice
-        options:
-          - "eqe"
+        options: ["eqe"]
       build:
         description: "Build Type:"
         required: true
         default: "user"
         type: choice
-        options:
-          - "eng"
-          - "userdebug"
-          - "user"
-      release:
-        description: "Release"
-        default: false
-        type: boolean
-      upload:
-        description: "Upload Release Assets"
-        default: false
-        type: boolean
+        options: ["user", "userdebug", "eng"]
+      removals:
+        description: "Folders to be removed before syncing:"
+        required: false
+
+env:
+  android: "EvolutionX"
+  manifest: "https://github.com/Evolution-X/manifest.git"
+  branch: "bka"
+  target: "evolution"
 
 jobs:
   prepare:
@@ -85,26 +70,7 @@ jobs:
     steps:
       - name: Setup Project
         run: |
-          echo "project=/crave-devspaces/${{ inputs.android }}" >> "$GITHUB_ENV"
-
-          set_android() {
-            echo "manifest=$1" >> "$GITHUB_ENV"
-            echo "branch=$2" >> "$GITHUB_ENV"
-            echo "target=$3" >> "$GITHUB_ENV"
-          }
-
-          case "${{ inputs.android }}" in
-            "LineageOS")
-              set_android "https://github.com/LineageOS/android.git" "lineage-23.0" "bacon"
-            ;;
-            "EvolutionX")
-              set_android "https://github.com/Evolution-X/manifest.git" "bka" "evolution"
-            ;;
-            "Lunaris-AOSP")
-              set_android "https://github.com/Lunaris-AOSP/android.git" "16" "lunaris"
-            ;;
-          esac
-
+          echo "project=/crave-devspaces/${{ env.android }}" >> "$GITHUB_ENV"
           echo $CRAVE_CONF > $HOME/crave.conf
           crave clone create --projectID 93 ${{ env.project }} || echo "Crave clone create failed!"
         env:
@@ -117,7 +83,6 @@ jobs:
             ignoreClientHostname: true
             no-patch: true
             env:
-              BUILD_UTILS: "https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ github.ref_name }}"
               GH_TOKEN: "${{ secrets.GH_TOKEN }}"
           EOF
 
@@ -128,7 +93,7 @@ jobs:
           rm -rf vendor/private .repo/local_manifests ${{ inputs.removals }}
 
           repo init --depth 1 --git-lfs -u ${{ env.manifest }} -b ${{ env.branch }}
-          curl -LSs --create-dirs "$BUILD_UTILS/manifests/${{ inputs.device }}.xml" -o .repo/local_manifests/default.xml
+          git clone https://github.com/Z7G4N1U8/local_manifests .repo/local_manifests
           git clone https://$GH_TOKEN@github.com/Z7G4N1U8/android_vendor_private_keys vendor/private/keys
           /opt/crave/resync.sh
 
@@ -141,15 +106,13 @@ jobs:
       - name: Pull ROM
         if: ${{ success() }}
         working-directory: ${{ env.project }}
-        run: |
-          crave pull out/target/product/${{ inputs.device }}/{*.zip,boot.img,init_boot.img,vendor_boot.img,super_empty.img,recovery.img} -d ../builds/${{ inputs.android }}/${{ github.run_id }}
-          rm ../builds/${{ inputs.android }}/${{ github.run_id }}/*ota* || true
+        run: crave pull out/target/product/${{ inputs.device }}/{*.zip,boot.img,init_boot.img,vendor_boot.img,super_empty.img,recovery.img} -d ../builds/${{ github.run_id }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
         with:
-          name: ${{ inputs.android }}_${{ github.run_id }}
-          path: /crave-devspaces/builds/${{ inputs.android }}/${{ github.run_id }}
+          name: ${{ env.android }}_${{ github.run_id }}
+          path: /crave-devspaces/builds/${{ github.run_id }}
 
       - name: Execute if the job is cancelled
         if: ${{ cancelled() }}
@@ -160,54 +123,3 @@ jobs:
         if: ${{ failure() }}
         working-directory: ${{ env.project }}
         run: crave pull out/error.log && cat out/error.log
-
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    needs: build
-    if: ${{ inputs.release }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@main
-
-      - name: Download all artifacts
-        uses: actions/download-artifact@main
-        with:
-          path: artifacts
-
-      - name: Set Release Tag and Notes
-        run: |
-          echo "release=${{ inputs.android }}-$(date +"%Y-%m-%d")" >> $GITHUB_ENV
-          cat << EOF > release_notes.md
-
-          Notes:
-          -> Device: ${{ inputs.device }}
-          -> Build Type: ${{ inputs.build }}
-
-          Links:
-          -> [Instructions](https://github.com/${{ github.repository }}/wiki/Installation-Instructions-${{ inputs.device }})
-          -> [Source](https://github.com/${{ github.repository }}/blob/main/manifests/${{ inputs.device }}.xml)
-          -> [Download](https://nightly.link/${{ github.repository }}/actions/runs/${{ github.run_id }}/${{ inputs.android }}_${{ github.run_id }}.zip)
-          EOF
-
-          if [[ "${{ inputs.android }}" == "LineageOS" ]]; then
-            echo "-> [MindTheGapps](https://github.com/MindTheGapps/16.0.0-arm64/releases/latest)" >> release_notes.md
-          fi
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: ${{ inputs.android }}
-          tag_name: ${{ env.release }}
-          body_path: release_notes.md
-
-      - name: Upload Release Assets
-        if: ${{ inputs.upload }}
-        run: |
-          for file in $(find artifacts -type f); do
-            echo "Uploading $file..."
-            gh release upload "${{ env.release }}" "$file"
-          done
-        env:
-          GH_TOKEN: ${{ github.token }}
