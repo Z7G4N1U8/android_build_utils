@@ -1,24 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <manifest>
-    <remote name="eqe-github" fetch="https://github.com/moto-sm7550-devs" />
-    <remote name="peace-github" fetch="https://github.com/Z7G4N1U8" />
+  <remote name="peace" fetch="https://github.com/Z7G4N1U8" revision="bka" />
 
-    <project
-        remote="eqe-github"
-        name="android_kernel_motorola_sm7550"
-        path="sm7550"
-        revision="lineage-23.0"
-    />
-    <project
-        remote="peace-github"
-        name="android_kernel_motorola_sm7550-modules"
-        path="sm7550-modules"
-        revision="lineage-23.0"
-    />
-    <project
-        remote="eqe-github"
-        name="android_kernel_motorola_sm7550-devicetrees"
-        path="sm7550-devicetrees"
-        revision="lineage-22.1"
-    />
+  <project name="android_kernel_motorola_sm7550" path="sm7550" remote="peace" />
+  <project name="android_kernel_motorola_sm7550-modules" path="sm7550-modules" remote="peace" />
+  <project name="android_kernel_motorola_sm7550-devicetrees" path="sm7550-devicetrees" remote="peace" />
 </manifest>
