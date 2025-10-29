@@ -72,7 +72,7 @@ jobs:
         run: |
           echo "project=/crave-devspaces/${{ env.android }}" >> "$GITHUB_ENV"
           echo $CRAVE_CONF > $HOME/crave.conf
-          crave clone create --projectID 93 ${{ env.project }} || echo "Crave clone create failed!"
+          crave clone create --projectID 93 /crave-devspaces/${{ env.android }}|| echo "Crave clone create failed!"
         env:
           CRAVE_CONF: ${{ secrets.CRAVE_CONF }}
 
