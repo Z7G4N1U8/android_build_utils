@@ -19,10 +19,10 @@ on:
         required: false
 
 env:
-  android: "EvolutionX"
-  manifest: "https://github.com/Evolution-X/manifest.git"
-  branch: "bka"
-  target: "evolution"
+  android: "LineageOS"
+  manifest: "https://github.com/LineageOS/android.git"
+  branch: "lineage-23.0"
+  target: "bacon"
 
 jobs:
   prepare:
@@ -90,18 +90,27 @@ jobs:
         working-directory: ${{ env.project }}
         run: |
           crave run -- 'Run ID: ${{ github.run_id }}
-          rm -rf vendor/private .repo/local_manifests ${{ inputs.removals }}
+          rm -rf .repo/local_manifests ${{ inputs.removals }}
 
           repo init --depth 1 --git-lfs -u ${{ env.manifest }} -b ${{ env.branch }}
-          git clone https://github.com/Z7G4N1U8/local_manifests .repo/local_manifests
-          git clone https://$GH_TOKEN@github.com/Z7G4N1U8/android_vendor_private_keys vendor/private/keys
+          git clone https://github.com/${{ github.actor }}/local_manifests .repo/local_manifests
+          git clone https://$GH_TOKEN@github.com/${{ github.actor }}/android_vendor_lineage-priv_keys vendor/lineage-priv/keys
           /opt/crave/resync.sh
+
+          export BUILD_USERNAME=peace
+          export BUILD_HOSTNAME=crave
+          export SKIP_ABI_CHECKS=true
 
           source build/envsetup.sh
           breakfast ${{ inputs.device }} ${{ inputs.build }}
           cmka ${{ env.target }}
+
+          rm -rf $OUT/*ota* vendor/lineage-priv/keys
           '
         timeout-minutes: 1440
+
+      - name: Remove crave.yaml
+        run: rm ${{ env.project }}/.repo/manifests/crave.yaml
 
       - name: Pull ROM
         if: ${{ success() }}
@@ -123,3 +132,50 @@ jobs:
         if: ${{ failure() }}
         working-directory: ${{ env.project }}
         run: crave pull out/error.log && cat out/error.log
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@main
+        with:
+          path: artifacts
+
+      - name: Set Release Tag and Notes
+        run: |
+          echo "release=${{ env.android }}-$(date +"%Y-%m-%d")" >> $GITHUB_ENV
+          cat << EOF > release_notes.md
+
+          Notes:
+          -> Device: ${{ inputs.device }}
+          -> Build Type: ${{ inputs.build }}
+
+          Links:
+          -> [Instructions](https://github.com/${{ github.repository }}/wiki/Installation-Instructions-${{ inputs.device }})
+          -> [Source](https://github.com/${{ github.repository }}/blob/main/manifests/${{ inputs.device }}.xml)
+          -> [Run Details](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          -> [MindTheGapps](https://github.com/MindTheGapps/16.0.0-arm64/releases/latest)
+          EOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ env.android }}
+          tag_name: ${{ env.release }}
+          body_path: release_notes.md
+
+      - name: Upload Release Assets
+        if: ${{ inputs.upload }}
+        run: |
+          for file in $(find artifacts -type f); do
+            echo "Uploading $file..."
+            gh release upload "${{ env.release }}" "$file"
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
