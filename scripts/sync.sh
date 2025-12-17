@@ -19,12 +19,15 @@ while [ $COUNT -lt $MAX_TRIES ]; do
   [ ${PIPESTATUS[0]} -eq 0 ] && break # Success: Exit loop
   [ $COUNT -eq $MAX_TRIES ] && exit 1 # Failure: Abort script
 
-  # Delete failing repositories
-  FAILING_REPOS=$(awk '/Failing repos.*:/{f=1;next}/Try/{exit}f{print $NF}' sync_output.txt | sort -u)
-  if [ -n "$FAILING_REPOS" ]; then
-    for REPO_PATH in $FAILING_REPOS; do
-      echo "Deleting: $REPO_PATH"
-      rm -rf "$REPO_PATH" ".repo/projects/$REPO_PATH.git"
+  # Delete broken repositories
+  STUCK=$(grep "uncommitted changes are present" sync_output.txt | cut -d ':' -f 2)
+  FAILING=$(awk '/Failing repos.*:/{f=1;next}/Try/{exit}f{print $NF}' sync_output.txt)
+  BROKEN_REPOS=$(echo "$STUCK $FAILING" | xargs -n1 | sort -u)
+
+  if [ -n "$BROKEN_REPOS" ]; then
+    for REPO in $BROKEN_REPOS; do
+      echo "Deleting: $REPO"
+      rm -rf "$REPO" ".repo/projects/$REPO.git"
     done
   fi
 
