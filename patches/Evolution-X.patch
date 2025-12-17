@@ -1,0 +1,37 @@
+From fc99c404507ceed0e8dcf1fcb7cb0259bee35901 Mon Sep 17 00:00:00 2001
+From: Peace <git@z7g4n1u8.dev>
+Date: Wed, 3 Dec 2025 17:25:33 +0530
+Subject: [PATCH] eqe: @Evolution-X Bringup
+
+---
+ BoardConfig.mk | 1 +
+ lineage_eqe.mk | 4 ++++
+ 2 files changed, 5 insertions(+)
+
+diff --git a/BoardConfig.mk b/BoardConfig.mk
+index 6016bd3..594f1ea 100644
+--- a/BoardConfig.mk
++++ b/BoardConfig.mk
+@@ -4,6 +4,7 @@
+ #
+ 
+ DEVICE_PATH := device/motorola/eqe
++DISABLE_ARTIFACT_PATH_REQUIREMENTS := true
+ 
+ # Architecture
+ TARGET_ARCH := arm64
+diff --git a/lineage_eqe.mk b/lineage_eqe.mk
+index 9d9a619..51ad681 100644
+--- a/lineage_eqe.mk
++++ b/lineage_eqe.mk
+@@ -15,6 +15,10 @@ $(call inherit-product, device/motorola/eqe/device.mk)
+ # Inherit some common Lineage stuff.
+ $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
+ 
++TARGET_HAS_UDFPS := true
++TARGET_INCLUDE_ACCORD := false
++TARGET_SUPPORTS_QUICK_TAP := false
++
+ PRODUCT_NAME := lineage_eqe
+ PRODUCT_DEVICE := eqe
+ PRODUCT_MANUFACTURER := motorola
