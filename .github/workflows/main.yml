@@ -9,10 +9,6 @@ on:
         default: "LineageOS"
         type: choice
         options: [LineageOS, Evolution-X]
-      upload:
-        description: "Upload to SourceForge"
-        required: true
-        type: boolean
 
 jobs:
   build:
@@ -25,12 +21,12 @@ jobs:
           BB_KEY: ${{ secrets.bb_key }}
           GH_ACTOR: ${{ github.actor }}
           GH_REPOSITORY: ${{ github.repository }}
-          SF_UPLOAD: ${{ inputs.upload }}
+          RCLONE_CONF: ${{ secrets.rclone_conf }}
           SSH_KEY: ${{ secrets.ssh_key }}
         with:
           host: ${{ secrets.gce_host }}
           username: ${{ secrets.gce_user }}
           key: ${{ secrets.ssh_key }}
           script: curl -LSs https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/main/scripts/build.sh | bash
-          envs: ANDROID,BB_KEY,GH_ACTOR,GH_REPOSITORY,SF_UPLOAD,SSH_KEY
+          envs: ANDROID,BB_KEY,GH_ACTOR,GH_REPOSITORY,RCLONE_CONF,SSH_KEY
           command_timeout: 3h

@@ -15,9 +15,8 @@ case "$ANDROID" in
 esac
 
 PROJECT=android
-PROJECT_FILES=$HOME/files/$ANDROID
 UTILS="https://raw.githubusercontent.com/$GH_REPOSITORY/refs/heads/main"
-RSYNC_OPTS=( -avP --exclude='*-ota.zip' --include='*.zip' --exclude='*' )
+FILTERS=( --max-depth 1 --filter "- *-ota.zip" --filter "+ *.zip" --filter "- *" )
 
 function handle_error() {
   cat out/error.log
@@ -25,7 +24,6 @@ function handle_error() {
   exit 1
 } ; trap handle_error ERR
 
-mkdir -p $PROJECT $PROJECT_FILES
 curl -LSs $UTILS/scripts/gcpsetup.sh | bash
 
 cd $PROJECT && rm -rf .repo/local_manifests
@@ -39,5 +37,5 @@ source <(curl -LSs $UTILS/scripts/envsetup.sh)
 breakfast eqe $BUILD_TYPE
 cmka $TARGET
 
-rsync "${RSYNC_OPTS[@]}" $OUT/ $PROJECT_FILES
-[ $SF_UPLOAD == true ] && rsync "${RSYNC_OPTS[@]}" $OUT/ z7g4n1u8@frs.sourceforge.net:/home/frs/project/eqe/$ANDROID || true
+rclone copy "${FILTERS[@]}" $OUT/ GoogleDrive:Android/$ANDROID/
+rclone copy "${FILTERS[@]}" $OUT/ SourceForge:/home/frs/project/eqe/$ANDROID/

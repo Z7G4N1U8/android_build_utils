@@ -4,6 +4,7 @@
 
 function setup_disk() {
   sudo blkid $1 >/dev/null || sudo mkfs.ext4 -F -q -m 0 $1
+  mkdir -p $2
   mountpoint -q $2 || { sudo mount "$1" "$2" && sudo chown -R $(whoami):$(whoami) "$2"; }
 } ; setup_disk /dev/disk/by-id/google-local-nvme-ssd-0 android
 
@@ -17,7 +18,7 @@ packages=(
   "xsltproc" "zip" "zlib1g-dev"
 
   # extra
-  "btop" "linux-modules-extra-$(uname -r)" "micro"
+  "btop" "linux-modules-extra-$(uname -r)" "micro" "rclone"
 )
 
 # Install all necessary packages
@@ -46,6 +47,10 @@ Host *
   StrictHostKeyChecking no
   UserKnownHostsFile /dev/null
 EOF
+
+# Setup rclone.conf
+mkdir -p ~/.config/rclone
+echo "$RCLONE_CONF" > ~/.config/rclone/rclone.conf
 
 # Install repo
 sudo curl -LSs https://storage.googleapis.com/git-repo-downloads/repo -o /usr/local/bin/repo
