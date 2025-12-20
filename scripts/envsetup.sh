@@ -12,9 +12,10 @@ export USE_CCACHE=1
 export CCACHE_EXEC=/usr/bin/ccache
 export CCACHE_DIR=$PROJECT/ccache
 
-# Setup user/host name
+# Set build user/host name and timezone
 export BUILD_USERNAME=$USER
 export BUILD_HOSTNAME=$HOSTNAME
+export TZ=Asia/Kolkata
 
 # Temp build error fix
 export SKIP_ABI_CHECKS=true
