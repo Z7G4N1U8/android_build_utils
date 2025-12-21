@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Z7G4N1U8 (Peace)
 
-source build/envsetup.sh
+source build/envsetup.sh &> /dev/null
 source <(curl -LSs $UTILS/scripts/rbe.sh)
 
 # Setup ccache
