@@ -10,7 +10,7 @@ ccache -M 50G
 ccache -o compression=true
 export USE_CCACHE=1
 export CCACHE_EXEC=/usr/bin/ccache
-export CCACHE_DIR=$PROJECT/ccache
+export CCACHE_DIR=$HOME/android/ccache
 
 # Set build user/host name and timezone
 export BUILD_USERNAME=$USER
