@@ -1,0 +1,28 @@
+From 0ef4fc19b775e3a51bf7e3378de209678b69e8fb Mon Sep 17 00:00:00 2001
+From: peace <git@z7g4n1u8.dev>
+Date: Thu, 15 Jan 2026 17:59:09 +0530
+Subject: [PATCH] eqe: Bringup! LineageOS
+
+---
+ .../apps/Updater/app/src/main/res/values/strings.xml     | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+ create mode 100644 overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml
+
+diff --git a/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml b/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml
+new file mode 100644
+index 0000000..3e0a677
+--- /dev/null
++++ b/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml
+@@ -0,0 +1,9 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++     SPDX-FileCopyrightText: The LineageOS Project
++     SPDX-License-Identifier: Apache-2.0
++-->
++<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
++    <string name="updater_server_url" translatable="false">https://raw.githubusercontent.com/moto-sm7550-dev/lineage_eqe/refs/heads/main/ota/metadata.json</string>
++    <string name="menu_changelog_url" translatable="false">https://raw.githubusercontent.com/moto-sm7550-dev/lineage_eqe/refs/heads/main/ota/changelog.txt</string>
++</resources>
+-- 
+2.52.0
+
